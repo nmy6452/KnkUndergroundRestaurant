@@ -46,11 +46,14 @@ class MainActivity : AppCompatActivity() {
             if (image != null) {
                 // 이미지를 ImageView에 설정
                 imageView.setImageBitmap(image)
+                // 이미지 클릭 시 전체 화면으로 확대해서 보여주기
+                imageView.setOnClickListener {
+                    showFullScreenImage(image)  // 이미지 클릭 시 전체 화면 이미지 보여주기
+                }
             } else {
                 // 이미지 다운로드 실패 시 처리
                 println("이미지를 다운로드할 수 없습니다.")
                 Toast.makeText(getApplicationContext(), "이미지 다운로드 오류 발생", Toast.LENGTH_SHORT).show()  // Toast 객체 정의
-
             }
         }
 
@@ -127,6 +130,13 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    // 전체 화면에 이미지를 띄우는 함수
+    private fun showFullScreenImage(image: Bitmap) {
+        val fragment = FullScreenImageDialogFragment.newInstance(image)
+        fragment.show(supportFragmentManager, "fullScreenImageDialog")
+    }
+
 
     fun downloadImage(url: String): Bitmap? {
         return try {
