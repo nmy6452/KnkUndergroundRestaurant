@@ -1,10 +1,22 @@
 package com.nmy.test
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.nmy.test.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -16,6 +28,7 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     //private lateinit var mAdView: AdView
+    private final val baseUrl = "https://nmy6452.github.io/KnkUndergroundRestaurant/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,52 +37,34 @@ class MainActivity : AppCompatActivity() {
 
         binding.Date.text = getDateText()
 
-        //showBannerAd()
+        val imageView: ImageView = binding.imageView
+        // 비동기적으로 이미지를 가져오고, 가져온 이미지를 ImageView에 설정합니다.
+
+        // 비동기적으로 이미지를 다운로드하고 ImageView에 설정
+        lifecycleScope.launch {
+            val image = getDateBasedImage()
+            if (image != null) {
+                // 이미지를 ImageView에 설정
+                imageView.setImageBitmap(image)
+            } else {
+                // 이미지 다운로드 실패 시 처리
+                println("이미지를 다운로드할 수 없습니다.")
+                Toast.makeText(getApplicationContext(), "이미지 다운로드 오류 발생", Toast.LENGTH_SHORT).show()  // Toast 객체 정의
+
+            }
+        }
+
     }
 
-//    private fun showBannerAd() {
-//        // 애드몹 초기화
-//        MobileAds.initialize(this) {}
-//
-//        // 테스트용 기기를 등록하여 광고 카운팅을 제외하도록 처리
-//        val testDeviceIds = listOf("My device ID1", "My Device ID2")
-//        MobileAds.setRequestConfiguration(
-//            RequestConfiguration.Builder()
-//                .setTestDeviceIds(testDeviceIds)
-//                .build()
-//        )
-//
-//        mAdView = binding.adView
-//        // 인터넷에서 광고를 불러옴
-//        val bannerAdRequest = AdRequest.Builder().build()
-//        // 광고를 배너에 표시
-//        mAdView.loadAd(bannerAdRequest)
-//        mAdView.adListener = object : AdListener() {
-//            // 광고 로딩이 성공했을때 처리
-//            override fun onAdLoaded() {
-//                Toast.makeText(applicationContext, "Banner Ad loaded", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            // 광고 로딩이 실패했을때 처리
-//            override fun onAdFailedToLoad(p0: LoadAdError) {
-//                Toast.makeText(applicationContext, "Banner Ad loading failed", Toast.LENGTH_SHORT).show()
-//            }
-//
-//        }
-//    }
-
     override fun onPause() {
-        //mAdView.pause()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        //mAdView.resume()
     }
 
     override fun onDestroy() {
-        //mAdView.destroy()
         super.onDestroy()
     }
 
@@ -107,6 +102,50 @@ class MainActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         // 1년 중 몇 번째 주인지 가져오기
         return calendar.get(Calendar.WEEK_OF_YEAR)
+    }
+
+    // Coroutine을 사용한 비동기 이미지 다운로드
+    suspend fun getDateBasedImage(): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            // 현재 날짜를 가져옵니다
+            val calendar = Calendar.getInstance()
+
+            // Locale을 사용해 날짜를 포맷합니다 (예: 2025-09)
+            val year = calendar.get(Calendar.YEAR)
+            val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
+
+            // 날짜를 "2025-09" 형태로 만들기
+            val dateString = String.format(Locale.getDefault(), "%d-%02d", year, weekOfYear)
+
+            // URL을 형성합니다.
+            val imageUrl = "$baseUrl$dateString.jpg"
+
+            Log.d("imageUrl",imageUrl)
+
+            // 이미지를 비동기적으로 다운로드하여 반환합니다.
+            return@withContext downloadImage(imageUrl)
+        }
+
+    }
+
+    fun downloadImage(url: String): Bitmap? {
+        return try {
+            // URL을 통해 연결 설정
+            val connection = URL(url).openConnection() as HttpURLConnection
+            connection.connectTimeout = 5000
+            connection.readTimeout = 5000
+            connection.requestMethod = "GET"
+
+            // 연결이 성공적이면 이미지 파일을 다운로드합니다.
+            val inputStream: InputStream = connection.inputStream
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            // 다운로드한 이미지를 반환
+            bitmap
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }
