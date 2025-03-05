@@ -1,4 +1,4 @@
-package com.nmy.test
+package com.nmy.knk
 
 import android.app.Dialog
 import android.graphics.Bitmap
@@ -7,10 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.nmy.test.databinding.ActivityMainBinding
-import com.nmy.test.databinding.DialogFullScreenImageBinding
+import com.nmy.knk.databinding.DialogFullScreenImageBinding
 
-class FullScreenImageDialogFragment : DialogFragment() {
+class FullScreenImageDialogFragment : DialogFragment(){
     private lateinit var binding: DialogFullScreenImageBinding
 
     companion object {

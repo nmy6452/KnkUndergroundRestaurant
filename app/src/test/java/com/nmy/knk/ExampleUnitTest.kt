@@ -1,4 +1,4 @@
-package com.nmy.test
+package com.nmy.knk
 
 import org.junit.Test
 

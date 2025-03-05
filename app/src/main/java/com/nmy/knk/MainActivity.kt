@@ -1,16 +1,17 @@
-package com.nmy.test
+package com.nmy.knk
 
+import android.R.id.button1
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.nmy.test.databinding.ActivityMainBinding
+import com.nmy.knk.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,14 +19,11 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DatePickerListener {
     private lateinit var binding: ActivityMainBinding
     //private lateinit var mAdView: AdView
     private final val baseUrl = "https://nmy6452.github.io/KnkUndergroundRestaurant/"
@@ -37,25 +35,21 @@ class MainActivity : AppCompatActivity() {
 
         binding.Date.text = getDateText()
 
-        val imageView: ImageView = binding.imageView
-        // 비동기적으로 이미지를 가져오고, 가져온 이미지를 ImageView에 설정합니다.
+        binding.Date.setOnClickListener(View.OnClickListener {
+            val dialogFragment: DialogFragment = DatePickerFragment()
+            dialogFragment.show(supportFragmentManager, "datePicker")
+        })
 
-        // 비동기적으로 이미지를 다운로드하고 ImageView에 설정
-        lifecycleScope.launch {
-            val image = getDateBasedImage()
-            if (image != null) {
-                // 이미지를 ImageView에 설정
-                imageView.setImageBitmap(image)
-                // 이미지 클릭 시 전체 화면으로 확대해서 보여주기
-                imageView.setOnClickListener {
-                    showFullScreenImage(image)  // 이미지 클릭 시 전체 화면 이미지 보여주기
-                }
-            } else {
-                // 이미지 다운로드 실패 시 처리
-                println("이미지를 다운로드할 수 없습니다.")
-                Toast.makeText(getApplicationContext(), "이미지 다운로드 오류 발생", Toast.LENGTH_SHORT).show()  // Toast 객체 정의
-            }
-        }
+        val calendar = Calendar.getInstance()
+
+        // Locale을 사용해 날짜를 포맷합니다 (예: 2025-09)
+        val year = calendar.get(Calendar.YEAR)
+        val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
+
+        // 날짜를 "2025-09" 형태로 만들기
+        val dateString = String.format(Locale.getDefault(), "%d-%02d", year, weekOfYear)
+
+        updateImage(dateString = dateString)
 
     }
 
@@ -69,6 +63,33 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+
+    override fun updateImage(dateString: String){
+        val imageView = binding.imageView
+
+        // 비동기적으로 이미지를 다운로드하고 ImageView에 설정
+        lifecycleScope.launch {
+
+            val image = getDateBasedImage(date=dateString)
+            if (image != null) {
+                // 이미지를 ImageView에 설정
+                imageView.setImageBitmap(image)
+                // 이미지 클릭 시 전체 화면으로 확대해서 보여주기
+                imageView.setOnClickListener {
+                    showFullScreenImage(image)  // 이미지 클릭 시 전체 화면 이미지 보여주기
+                }
+            } else {
+                // 이미지 다운로드 실패 시 처리
+                imageView.setImageBitmap(null)
+                Toast.makeText(getApplicationContext(), "이미지 다운로드 오류 발생", Toast.LENGTH_SHORT).show()  // Toast 객체 정의
+            }
+        }
+    }
+
+    override fun updateDate(str: String) {
+        binding.Date.text = str
     }
 
     fun getDateText(): String {
@@ -108,20 +129,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Coroutine을 사용한 비동기 이미지 다운로드
-    suspend fun getDateBasedImage(): Bitmap? {
+    suspend fun getDateBasedImage(date: String): Bitmap? {
         return withContext(Dispatchers.IO) {
-            // 현재 날짜를 가져옵니다
-            val calendar = Calendar.getInstance()
-
-            // Locale을 사용해 날짜를 포맷합니다 (예: 2025-09)
-            val year = calendar.get(Calendar.YEAR)
-            val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
-
-            // 날짜를 "2025-09" 형태로 만들기
-            val dateString = String.format(Locale.getDefault(), "%d-%02d", year, weekOfYear)
 
             // URL을 형성합니다.
-            val imageUrl = "$baseUrl$dateString.jpg"
+            val imageUrl = "$baseUrl$date.jpg"
 
             Log.d("imageUrl",imageUrl)
 

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.nmy.test'
+    namespace 'com.nmy.knk'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.nmy.test"
+        applicationId "com.nmy.knk"
         minSdk 24
         targetSdk 34
         versionCode 1
