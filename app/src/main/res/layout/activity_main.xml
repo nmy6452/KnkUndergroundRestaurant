@@ -21,7 +21,7 @@
             android:layout_marginRight="16dp"
             android:fontFamily="@font/bmhanna_pro"
             android:text="KNK주간매뉴"
-            android:textColor="@color/black"
+            android:textColor="@color/MainActivityTitle"
             android:textSize="34sp"
             android:textStyle="bold" />
 
@@ -32,7 +32,7 @@
             android:layout_weight="0"
             android:fontFamily="@font/bmdohyeon"
             android:text="날짜 표시"
-            android:textColor="@color/material_dynamic_neutral50"
+            android:textColor="@color/MainActivityDate"
             android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>

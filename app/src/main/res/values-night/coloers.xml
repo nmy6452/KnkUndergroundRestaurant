@@ -3,7 +3,6 @@
     <color name="Dark">#FFFFFFFF</color>
     <color name="white">#FF000000</color>
 
-    <color name="MainActivityTitle">#FF000000</color>
+    <color name="MainActivityTitle">#FFFFFFFF</color>
     <color name="MainActivityDate">@color/material_dynamic_neutral50</color>
-
 </resources>
