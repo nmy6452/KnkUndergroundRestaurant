@@ -34,27 +34,38 @@ class DatePickerFragment : DialogFragment(), OnDateSetListener {
         return DatePickerDialog(requireActivity(), this, year, month, day)
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        // 다이얼로그가 화면에 표시된 후 버튼 색상 설정
+        val datePickerDialog = dialog as DatePickerDialog
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(android.R.color.white, null))
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(android.R.color.white, null))
+    }
+
     override fun onDateSet(datePicker: DatePicker, year: Int, month: Int, day: Int) {
         val selectedCalendar = Calendar.getInstance().apply {
             set(year, month, day)
         }
         val currentCalendar = Calendar.getInstance()
-
         // 미래 날짜인지 비교
         if (selectedCalendar.after(currentCalendar)) {
             Toast.makeText(activity, "미래 날짜는 선택할 수 없습니다.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val formattedDateWeek = String.format("%d-%02d", year, getWeekOfYear(year, month, day))
-        listener?.updateImage(formattedDateWeek)
+        // 선택된 날짜의 형식: "2025-04-26"
+        val formattedDate = String.format("%d-%02d-%02d", year, month + 1, day)
+
+        // 날짜에 맞는 메뉴 정보를 가져오기 위해 listener 호출
+        listener?.updateMenu(formattedDate)
 
         val dayOfWeek = selectedCalendar.get(Calendar.DAY_OF_WEEK)
         val dayOfWeekString = getKoreanDayOfWeek(dayOfWeek)
 
         val dateFormat = SimpleDateFormat("MM월 dd일", Locale.getDefault())
-        val formattedDate = dateFormat.format(selectedCalendar.time)
-        listener?.updateDate("$formattedDate ($dayOfWeekString)")
+        val formattedDateText = dateFormat.format(selectedCalendar.time)
+        listener?.updateDate("$formattedDateText ($dayOfWeekString)")
     }
 
     private fun getWeekOfYear(year: Int, month: Int, day: Int): Int {

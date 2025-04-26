@@ -51,13 +51,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageView"
+<!--            <ImageView-->
+<!--                android:id="@+id/imageView"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:contentDescription="주간 메뉴 이미지"-->
+<!--                android:scaleType="fitCenter"-->
+<!--                android:adjustViewBounds="true"/>-->
+            <TextView
+                android:id="@+id/menuTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="주간 메뉴 이미지"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"/>
+                android:textSize="18sp"
+                android:textColor="@color/MainActivityTitle" />
         </LinearLayout>
     </ScrollView>
 
