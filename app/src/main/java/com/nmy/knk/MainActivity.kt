@@ -1,12 +1,16 @@
 package com.nmy.knk
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
@@ -51,14 +55,67 @@ class MainActivity : AppCompatActivity(), DatePickerListener {
         updateMenu(dateString = dateString)
     }
 
+     @SuppressLint("SetTextI18n")
      override fun updateMenu(dateString: String) {
         lifecycleScope.launch {
             val menuData = getMenuData(dateString)
+            val lunchCorner1 = binding.lunchCorner1
+            val lunchCorner2 = binding.lunchCorner2
+            val dinnerCorner1 = binding.dinnerCorner1
+
+            val lunchCorner1Layout = binding.lunchCorner1.getChildAt(0) as LinearLayout
+            val lunchCorner2Layout = binding.lunchCorner2.getChildAt(0) as LinearLayout
+            val dinnerCorner1Layout = binding.dinnerCorner1.getChildAt(0) as LinearLayout
+
             if (menuData != null) {
-                val menuText = buildMenuText(menuData)
-                binding.menuTextView.text = menuText
+                lunchCorner1.visibility = View.VISIBLE
+                lunchCorner2.visibility = View.VISIBLE
+                dinnerCorner1.visibility = View.VISIBLE
+
+                if(lunchCorner1Layout.getChildAt(0) is TextView){
+                    (lunchCorner1Layout.getChildAt(0) as TextView).text = "점심 1"
+                }
+                if(lunchCorner1Layout.getChildAt(1) is TextView){
+                    (lunchCorner1Layout.getChildAt(1) as TextView).text = menuData.lunchCorner1[0]
+                }
+                if (lunchCorner1Layout.getChildAt(2) is TextView) {
+                    val text = menuData.lunchCorner1
+                        .drop(1) // 인덱스 1부터 끝까지
+                        .joinToString("\n") // 줄바꿈으로 합치기
+                    (lunchCorner1Layout.getChildAt(2) as TextView).text = text
+                }
+
+                if(lunchCorner2Layout.getChildAt(0) is TextView){
+                    (lunchCorner2Layout.getChildAt(0) as TextView).text = "점심 2"
+                }
+                if(lunchCorner2Layout.getChildAt(1) is TextView){
+                    (lunchCorner2Layout.getChildAt(1) as TextView).text = menuData.lunchCorner2[0]
+                }
+                if (lunchCorner2Layout.getChildAt(2) is TextView) {
+                    val text = menuData.lunchCorner2
+                        .drop(1) // 인덱스 1부터 끝까지
+                        .joinToString("\n") // 줄바꿈으로 합치기
+                    (lunchCorner2Layout.getChildAt(2) as TextView).text = text
+                }
+
+                if(dinnerCorner1Layout.getChildAt(0) is TextView){
+                    (dinnerCorner1Layout.getChildAt(0) as TextView).text = "저녁"
+                }
+                if(dinnerCorner1Layout.getChildAt(1) is TextView){
+                    (dinnerCorner1Layout.getChildAt(1) as TextView).text = menuData.dinnerCorner1[0]
+                }
+                if (dinnerCorner1Layout.getChildAt(2) is TextView) {
+                    val text = menuData.dinnerCorner1
+                        .drop(1) // 인덱스 1부터 끝까지
+                        .joinToString("\n") // 줄바꿈으로 합치기
+                    (dinnerCorner1Layout.getChildAt(2) as TextView).text = text
+                }
+
             } else {
-                binding.menuTextView.text = "메뉴 정보를 가져올 수 없습니다."
+                Toast.makeText(getApplicationContext(), "매뉴정보가 없습니다.", Toast.LENGTH_SHORT).show()
+                lunchCorner1.visibility = View.GONE
+                lunchCorner2.visibility = View.GONE
+                dinnerCorner1.visibility = View.GONE
             }
         }
     }
@@ -85,29 +142,6 @@ class MainActivity : AppCompatActivity(), DatePickerListener {
                 return@withContext null
             }
         }
-    }
-
-    private fun buildMenuText(menuData: MenuData): String {
-        val builder = StringBuilder()
-
-        builder.append("날짜: ${menuData.date} (${menuData.doWeek})\n\n")
-
-        builder.append("[점심 1코너]\n")
-        builder.append(menuData.lunchCorner1.joinToString(", "))
-        builder.append("\n\n")
-
-        builder.append("[점심 2코너]\n")
-        builder.append(menuData.lunchCorner2.joinToString(", "))
-        builder.append("\n\n")
-
-        builder.append("[저녁 코너]\n")
-        if (menuData.dinnerCorner1.isNotEmpty()) {
-            builder.append(menuData.dinnerCorner1.joinToString(", "))
-        } else {
-            builder.append("메뉴 없음")
-        }
-
-        return builder.toString()
     }
 
     //private lateinit var mAdView: AdView

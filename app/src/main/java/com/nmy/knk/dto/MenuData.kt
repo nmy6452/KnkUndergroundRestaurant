@@ -1,10 +1,10 @@
 package com.nmy.knk.dto
 
 data class MenuData(
-    val id: Int,
-    val date: String,
-    val doWeek: String,
-    val lunchCorner1: List<String>,
-    val lunchCorner2: List<String>,
-    val dinnerCorner1: List<String>
+    public val id: Int,
+    public val date: String,
+    public val doWeek: String,
+    public val lunchCorner1: List<String>,
+    public val lunchCorner2: List<String>,
+    public val dinnerCorner1: List<String>
 )
