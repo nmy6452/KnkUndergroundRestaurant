@@ -39,8 +39,8 @@ class DatePickerFragment : DialogFragment(), OnDateSetListener {
 
         // 다이얼로그가 화면에 표시된 후 버튼 색상 설정
         val datePickerDialog = dialog as DatePickerDialog
-        datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(android.R.color.white, null))
-        datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(android.R.color.white, null))
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(R.color.MainActivityTitle, null))
+        datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(R.color.MainActivityTitle, null))
     }
 
     override fun onDateSet(datePicker: DatePicker, year: Int, month: Int, day: Int) {
